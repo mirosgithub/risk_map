@@ -34,4 +34,14 @@ public class Graph {
     adjacencyMap.getOrDefault(node2, new ArrayList<>()).remove(node2);
     adjacencyMap.getOrDefault(node2, new ArrayList<>()).remove(node1);
   }
+
+  public List<String> getAdjacentNodes(Country node) {
+    List<String> adjacentNodes = new ArrayList<>();
+
+    for (Country adjacentNode : adjacencyMap.get(node)) {
+      adjacentNodes.add(node.getName());
+    }
+
+    return adjacentNodes;
+  }
 }
