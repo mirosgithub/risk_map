@@ -39,7 +39,7 @@ public class Graph {
     List<String> adjacentNodes = new ArrayList<>();
 
     for (Country adjacentNode : adjacencyMap.get(node)) {
-      adjacentNodes.add(node.getName());
+      adjacentNodes.add(adjacentNode.getName());
     }
 
     return adjacentNodes;
