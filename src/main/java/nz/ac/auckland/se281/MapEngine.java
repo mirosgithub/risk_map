@@ -83,6 +83,13 @@ public class MapEngine {
         MessageCli.INVALID_COUNTRY.printMessage(input);
       }
     }
+
+    String countryName = country.getName();
+    String continent = country.getContinent().getName();
+    String fuelCost = Integer.toString(country.getFuelCost());
+    String neighbours = "[" + String.join(", ", graph.getAdjacentNodes(country)) + "]";
+
+    MessageCli.COUNTRY_INFO.printMessage(countryName, continent, fuelCost, neighbours);
   }
 
   /** this method is invoked when the user run the command route. */
