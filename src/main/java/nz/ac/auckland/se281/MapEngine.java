@@ -40,26 +40,50 @@ public class MapEngine {
     for (String adjacencyData : adjacencies) {
       String[] parts = adjacencyData.split(",");
 
-      Country country = getCountry(parts[0]);
-      
+      Country country;
+
+      try {
+        country = getCountry(parts[0]);
+      } catch (InvalidCountryNameException e) {
+        return;
+      }
+
       for (int i = 1; i < parts.length; i++) {
-        Country neighbour = getCountry(parts[i]);
+        Country neighbour;
+        try {
+          neighbour = getCountry(parts[i]);
+        } catch (InvalidCountryNameException e) {
+          return;
+        }
         this.graph.addEdge(country, neighbour);
       }
     }
   }
 
-  private Country getCountry(String string) {
-  for (Country country : this.countries) {
-      if (country.getName().equalsIgnoreCase(string)) {
+  private Country getCountry(String string) throws InvalidCountryNameException {
+    for (Country country : this.countries) {
+      if (country.getName().equals(string)) {
         return country;
       }
     }
-    return null; // or throw an exception?
+    throw new InvalidCountryNameException(string);
   }
 
   /** this method is invoked when the user run the command info-country. */
-  public void showInfoCountry() {}
+  public void showInfoCountry() {
+    Country country = null;
+    MessageCli.INSERT_COUNTRY.printMessage();
+
+    while (country == null) {
+      String input = Utils.scanner.nextLine();
+      input = Utils.capitalizeFirstLetterOfEachWord(input);
+      try {
+        country = getCountry(input);
+      } catch (InvalidCountryNameException e) {
+        MessageCli.INVALID_COUNTRY.printMessage(input);
+      }
+    }
+  }
 
   /** this method is invoked when the user run the command route. */
   public void showRoute() {}
