@@ -34,7 +34,28 @@ public class MapEngine {
       this.graph.addNode(country);
     }
 
+    // e.g. Country,Neighbour1,Neighbour2,...
     List<String> adjacencies = Utils.readAdjacencies();
+
+    for (String adjacencyData : adjacencies) {
+      String[] parts = adjacencyData.split(",");
+
+      Country country = getCountry(parts[0]);
+      
+      for (int i = 1; i < parts.length; i++) {
+        Country neighbour = getCountry(parts[i]);
+        this.graph.addEdge(country, neighbour);
+      }
+    }
+  }
+
+  private Country getCountry(String string) {
+  for (Country country : this.countries) {
+      if (country.getName().equalsIgnoreCase(string)) {
+        return country;
+      }
+    }
+    return null; // or throw an exception?
   }
 
   /** this method is invoked when the user run the command info-country. */

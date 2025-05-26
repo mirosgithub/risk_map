@@ -12,6 +12,10 @@ public class Country {
     this.fuelCost = Integer.valueOf(fuelCost);
   }
 
+  public String getName() {
+    return this.name;
+  }
+
   public Continent getContinent() {
     return this.continent;
   }
