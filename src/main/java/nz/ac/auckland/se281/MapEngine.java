@@ -45,7 +45,8 @@ public class MapEngine {
       try {
         country = getCountry(parts[0]);
       } catch (InvalidCountryNameException e) {
-        return;
+        System.out.println("Invalid country name in the csv file: " + parts[0]);
+        continue;
       }
 
       for (int i = 1; i < parts.length; i++) {
@@ -53,7 +54,8 @@ public class MapEngine {
         try {
           neighbour = getCountry(parts[i]);
         } catch (InvalidCountryNameException e) {
-          return;
+          System.out.println("Invalid country name in the csv file: " + parts[i]);
+          continue;
         }
         this.graph.addEdge(country, neighbour);
       }
