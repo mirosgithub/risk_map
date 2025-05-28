@@ -122,5 +122,9 @@ public class MapEngine {
 
     MessageCli.INSERT_DESTINATION.printMessage();
     Country destination = readCountryInput();
+
+    if (source.equals(destination)) {
+      MessageCli.NO_CROSSBORDER_TRAVEL.printMessage();
+    }
   }
 }
