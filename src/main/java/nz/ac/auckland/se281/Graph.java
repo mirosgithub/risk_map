@@ -37,7 +37,7 @@ public class Graph<T> {
   }
 
   public List<T> getShortestPath(T root, T target) {
-    List<T> visited = new ArrayList<>();
+    Set<T> visited = new HashSet<>();
     Queue<T> queue = new LinkedList<>();
     Map<T, T> parentMap = new HashMap<>();
 
@@ -60,8 +60,7 @@ public class Graph<T> {
 
       for (T adjNode : adjacencyMap.get(node)) {
 
-        if (!visited.contains(adjNode)) {
-          visited.add(adjNode);
+        if (visited.add(adjNode)) {
           queue.add(adjNode);
           parentMap.put(adjNode, node);
         }
