@@ -96,13 +96,13 @@ public class MapEngine {
         MessageCli.INVALID_COUNTRY.printMessage(input);
       }
     }
-    
+
     return country;
   }
 
   private String convertListToString(List<Country> countries) {
     StringBuilder sb = new StringBuilder();
-    
+
     sb.append("[");
     for (int i = 0; i < countries.size(); i++) {
       if (i != 0) {
@@ -116,5 +116,11 @@ public class MapEngine {
   }
 
   /** this method is invoked when the user run the command route. */
-  public void showRoute() {}
+  public void showRoute() {
+    MessageCli.INSERT_SOURCE.printMessage();
+    Country source = readCountryInput();
+
+    MessageCli.INSERT_DESTINATION.printMessage();
+    Country destination = readCountryInput();
+  }
 }
