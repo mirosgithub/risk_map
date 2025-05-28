@@ -73,8 +73,19 @@ public class MapEngine {
 
   /** this method is invoked when the user run the command info-country. */
   public void showInfoCountry() {
-    Country country = null;
     MessageCli.INSERT_COUNTRY.printMessage();
+    Country country = readCountryInput();
+
+    String countryName = country.getName();
+    String continent = country.getContinent().getName();
+    String fuelCost = Integer.toString(country.getFuelCost());
+    String neighbours = convertListToString(graph.getAdjacentNodes(country));
+
+    MessageCli.COUNTRY_INFO.printMessage(countryName, continent, fuelCost, neighbours);
+  }
+
+  private Country readCountryInput() {
+    Country country = null;
 
     while (country == null) {
       String input = Utils.scanner.nextLine();
@@ -85,13 +96,8 @@ public class MapEngine {
         MessageCli.INVALID_COUNTRY.printMessage(input);
       }
     }
-
-    String countryName = country.getName();
-    String continent = country.getContinent().getName();
-    String fuelCost = Integer.toString(country.getFuelCost());
-    String neighbours = convertListToString(graph.getAdjacentNodes(country));
-
-    MessageCli.COUNTRY_INFO.printMessage(countryName, continent, fuelCost, neighbours);
+    
+    return country;
   }
 
   private String convertListToString(List<Country> countries) {
