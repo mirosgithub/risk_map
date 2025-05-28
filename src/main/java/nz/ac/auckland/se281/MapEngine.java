@@ -125,6 +125,15 @@ public class MapEngine {
 
     if (source.equals(destination)) {
       MessageCli.NO_CROSSBORDER_TRAVEL.printMessage();
+      return;
     }
+
+    // fastest route
+    String fastestRoute = convertListToString(graph.getShortestPath(source, destination));
+    MessageCli.ROUTE_INFO.printMessage(fastestRoute);
+    
+    // total fuel
+    // continents visited
+    // continent w/ highest fuel
   }
 }
