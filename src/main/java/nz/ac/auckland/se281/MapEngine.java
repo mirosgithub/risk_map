@@ -1,8 +1,6 @@
 package nz.ac.auckland.se281;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /** This class is the main entry point. */
 public class MapEngine {
@@ -104,12 +102,14 @@ public class MapEngine {
     StringBuilder sb = new StringBuilder();
 
     sb.append("[");
+
     for (int i = 0; i < countries.size(); i++) {
       if (i != 0) {
         sb.append(", ");
       }
       sb.append(countries.get(i).getName());
     }
+
     sb.append("]");
 
     return sb.toString();
@@ -139,6 +139,9 @@ public class MapEngine {
     MessageCli.FUEL_INFO.printMessage(Integer.toString(totalFuel));
 
     // continents visited
+    String continentsVisited = getContinentsVisited(fastestRoute);
+    MessageCli.CONTINENT_INFO.printMessage(continentsVisited);
+
     // continent w/ highest fuel
   }
 
@@ -150,5 +153,41 @@ public class MapEngine {
     }
 
     return totalFuel;
+  }
+
+  private String getContinentsVisited(List<Country> route) {
+    Map<Continent, Integer> visited = new LinkedHashMap<>();
+
+    for (int i = 0; i < route.size(); i++) {
+      Country country = route.get(i);
+      Continent continent = country.getContinent();
+      int fuelCost;
+
+      if (i == 0 || i == route.size() - 1) {
+        fuelCost = 0;
+      } else {
+        fuelCost = country.getFuelCost();
+      }
+
+      visited.put(continent, visited.getOrDefault(continent, 0) + fuelCost);
+    }
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+
+    Set<Continent> visitedContinents = visited.keySet();
+    int i = 0;
+
+    for (Continent c : visitedContinents) {
+      if (i != 0) {
+        sb.append(", ");
+      }
+      sb.append(c.getName() + " (" + visited.get(c) + ")");
+      i++;
+    }
+
+    sb.append("]");
+
+    return sb.toString();
   }
 }
