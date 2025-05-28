@@ -128,12 +128,27 @@ public class MapEngine {
       return;
     }
 
+    List<Country> fastestRoute = graph.getShortestPath(source, destination);
+
     // fastest route
-    String fastestRoute = convertListToString(graph.getShortestPath(source, destination));
-    MessageCli.ROUTE_INFO.printMessage(fastestRoute);
-    
+    String fastestRouteString = convertListToString(fastestRoute);
+    MessageCli.ROUTE_INFO.printMessage(fastestRouteString);
+
     // total fuel
+    int totalFuel = calculateTotalFuel(fastestRoute);
+    MessageCli.FUEL_INFO.printMessage(Integer.toString(totalFuel));
+
     // continents visited
     // continent w/ highest fuel
+  }
+
+  private int calculateTotalFuel(List<Country> route) {
+    int totalFuel = 0;
+
+    for (int i = 1; i < route.size() - 1; i++) {
+      totalFuel += route.get(i).getFuelCost();
+    }
+
+    return totalFuel;
   }
 }
