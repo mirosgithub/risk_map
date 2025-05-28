@@ -139,10 +139,13 @@ public class MapEngine {
     MessageCli.FUEL_INFO.printMessage(Integer.toString(totalFuel));
 
     // continents visited
-    String continentsVisited = getContinentsVisited(fastestRoute);
+    String continentsVisited = getContinentsVisited(fastestRoute).get(0);
     MessageCli.CONTINENT_INFO.printMessage(continentsVisited);
 
     // continent w/ highest fuel
+    String highestFuelContinent = getContinentsVisited(fastestRoute).get(1);
+    MessageCli.FUEL_CONTINENT_INFO.printMessage(highestFuelContinent); 
+
   }
 
   private int calculateTotalFuel(List<Country> route) {
@@ -155,8 +158,11 @@ public class MapEngine {
     return totalFuel;
   }
 
-  private String getContinentsVisited(List<Country> route) {
+  private List<String> getContinentsVisited(List<Country> route) {
     Map<Continent, Integer> visited = new LinkedHashMap<>();
+    List<String> result = new ArrayList<>();
+    int highestFuel = -1;
+    String highestFuelContinent = null;
 
     for (int i = 0; i < route.size(); i++) {
       Country country = route.get(i);
@@ -170,6 +176,10 @@ public class MapEngine {
       }
 
       visited.put(continent, visited.getOrDefault(continent, 0) + fuelCost);
+
+      if (visited.get(continent) > highestFuel) {
+        highestFuel = visited.get(continent);
+      }
     }
 
     StringBuilder sb = new StringBuilder();
@@ -179,15 +189,22 @@ public class MapEngine {
     int i = 0;
 
     for (Continent c : visitedContinents) {
+      String continentFuel = c.getName() + " (" + visited.get(c) + ")";
       if (i != 0) {
         sb.append(", ");
       }
-      sb.append(c.getName() + " (" + visited.get(c) + ")");
+      sb.append(continentFuel);
       i++;
+
+      if (visited.get(c) == highestFuel || highestFuelContinent == null) {
+        highestFuelContinent = continentFuel;
+      }
     }
 
     sb.append("]");
+    result.add(sb.toString());
+    result.add(highestFuelContinent);
 
-    return sb.toString();
+    return result;
   }
 }
