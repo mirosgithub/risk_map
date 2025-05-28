@@ -7,7 +7,7 @@ import java.util.Set;
 /** This class is the main entry point. */
 public class MapEngine {
 
-  private Graph graph = new Graph();
+  private Graph<Country> graph = new Graph<Country>();
   private Set<Country> countries = new HashSet<>();
 
   public MapEngine() {
@@ -87,9 +87,24 @@ public class MapEngine {
     String countryName = country.getName();
     String continent = country.getContinent().getName();
     String fuelCost = Integer.toString(country.getFuelCost());
-    String neighbours = "[" + String.join(", ", graph.getAdjacentNodes(country)) + "]";
+    String neighbours = convertListToString(graph.getAdjacentNodes(country));
 
     MessageCli.COUNTRY_INFO.printMessage(countryName, continent, fuelCost, neighbours);
+  }
+
+  private String convertListToString(List<Country> countries) {
+    StringBuilder sb = new StringBuilder();
+    
+    sb.append("[");
+    for (int i = 0; i < countries.size(); i++) {
+      if (i != 0) {
+        sb.append(", ");
+      }
+      sb.append(countries.get(i).getName());
+    }
+    sb.append("]");
+
+    return sb.toString();
   }
 
   /** this method is invoked when the user run the command route. */
