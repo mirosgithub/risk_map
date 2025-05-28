@@ -8,6 +8,15 @@ public enum Continent {
   AUSTRALIA("Australia"),
   EUROPE("Europe");
 
+  public static Continent fromString(String text) {
+    for (Continent continent : values()) {
+      if (continent.name.equalsIgnoreCase(text)) {
+        return continent;
+      }
+    }
+    return null;
+  }
+
   private final String name;
 
   Continent(String name) {
@@ -16,14 +25,5 @@ public enum Continent {
 
   public String getName() {
     return this.name;
-  }
-
-  public static Continent fromString(String text) {
-    for (Continent continent : Continent.values()) {
-      if (continent.name.equalsIgnoreCase(text)) {
-        return continent;
-      }
-    }
-    return null;
   }
 }
