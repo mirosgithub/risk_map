@@ -196,7 +196,7 @@ public class MapEngine {
       sb.append(continentFuel);
       i++;
 
-      if (visited.get(c) == highestFuel || highestFuelContinent == null) {
+      if (visited.get(c) == highestFuel && highestFuelContinent == null) {
         highestFuelContinent = continentFuel;
       }
     }
