@@ -1,9 +1,6 @@
 package nz.ac.auckland.se281;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Graph<T> {
 
@@ -37,5 +34,40 @@ public class Graph<T> {
 
   public List<T> getAdjacentNodes(T node) {
     return adjacencyMap.get(node);
+  }
+
+  public List<T> getShortestPath(T root, T target) {
+    List<T> visited = new ArrayList<>();
+    Queue<T> queue = new LinkedList<>();
+    Map<T, T> parentMap = new HashMap<>();
+
+    visited.add(root);
+    queue.add(root);
+    parentMap.put(root, null);
+
+    while (!queue.isEmpty()) {
+      T node = queue.poll();
+
+      if (node.equals(target)) {
+        List<T> path = new ArrayList<>();
+
+        for (T current = target; current != null; current = parentMap.get(current)) {
+          path.add(current);
+        }
+
+        return path.reversed();
+      }
+
+      for (T adjNode : adjacencyMap.get(node)) {
+
+        if (!visited.contains(adjNode)) {
+          visited.add(adjNode);
+          queue.add(adjNode);
+          parentMap.put(adjNode, node);
+        }
+      }
+    }
+
+    return null;
   }
 }
