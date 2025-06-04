@@ -11,7 +11,12 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({MainTest.Task1.class, MainTest.Task2.class, MainTest.YourTests.class})
+@SuiteClasses({
+  MainTest.Task1.class,
+  MainTest.Task2.class,
+  MainTest.YourTests.class,
+  MainTest.MyTests.class
+})
 public class MainTest {
 
   @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -674,6 +679,204 @@ public class MainTest {
       assertContains(CONTINENT_INFO.getMessage("[Asia (0), Europe (6)]"));
       assertContains(FUEL_INFO.getMessage("6"));
       assertContains(FUEL_CONTINENT_INFO.getMessage("Europe (6)"));
+    }
+  }
+
+  @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+  public static class MyTests extends SysCliTest {
+
+    public MyTests() {
+      super(Main.class);
+    }
+
+    /** Tests basic country information retrieval with valid country name. */
+    @Test
+    public void M1_01_info_valid_country() throws Exception {
+      runCommands(INFO_COUNTRY, "India");
+      assertContains(
+          COUNTRY_INFO.getMessage("India", "Asia", "3", "[Middle East, Afghanistan, China, Siam]"));
+    }
+
+    /** Tests country information retrieval with invalid country name followed by valid one. */
+    @Test
+    public void M1_02_info_invalid_then_valid() throws Exception {
+      runCommands(INFO_COUNTRY, "InvalidCountry", "Brazil");
+      assertContains(INVALID_COUNTRY.getMessage("InvalidCountry"));
+      assertContains(
+          COUNTRY_INFO.getMessage(
+              "Brazil", "South America", "2", "[Venezuela, North Africa, Argentina, Peru]"));
+    }
+
+    /** Tests case sensitivity in country names. */
+    @Test
+    public void M1_03_info_case_sensitivity() throws Exception {
+      runCommands(INFO_COUNTRY, "iNdIa", "India");
+      assertContains(INVALID_COUNTRY.getMessage("INdIa"));
+      assertContains(
+          COUNTRY_INFO.getMessage("India", "Asia", "3", "[Middle East, Afghanistan, China, Siam]"));
+    }
+
+    /** Tests route between same country (should show no cross-border travel message). */
+    @Test
+    public void M2_01_route_same_country() throws Exception {
+      runCommands(ROUTE, "Brazil", "Brazil");
+      assertContains(NO_CROSSBORDER_TRAVEL.getMessage());
+      assertDoesNotContain("The fastest route is: ");
+    }
+
+    /** Tests direct route between neighbouring countries. */
+    @Test
+    public void M2_02_route_direct_neighbors() throws Exception {
+      runCommands(ROUTE, "India", "Siam");
+      assertContains(ROUTE_INFO.getMessage("[India, Siam]"));
+      assertContains(FUEL_INFO.getMessage("0"));
+    }
+
+    /** Tests route with invalid source country followed by valid one. */
+    @Test
+    public void M2_03_route_invalid_source() throws Exception {
+      runCommands(ROUTE, "InvalidCountry", "India", "Siam");
+      assertContains(INVALID_COUNTRY.getMessage("InvalidCountry"));
+      assertContains(ROUTE_INFO.getMessage("[India, Siam]"));
+    }
+
+    /** Tests route with invalid destination country followed by valid one. */
+    @Test
+    public void M2_04_route_invalid_destination() throws Exception {
+      runCommands(ROUTE, "India", "InvalidCountry", "Siam");
+      assertContains(INVALID_COUNTRY.getMessage("InvalidCountry"));
+      assertContains(ROUTE_INFO.getMessage("[India, Siam]"));
+    }
+
+    /** Tests route between countries in same continent. */
+    @Test
+    public void M2_05_route_same_continent() throws Exception {
+      runCommands(ROUTE, "Brazil", "Argentina");
+      assertContains(ROUTE_INFO.getMessage("[Brazil, Argentina]"));
+      assertContains(CONTINENT_INFO.getMessage("[South America (0)]"));
+    }
+
+    /** Tests route between countries in different continents. */
+    @Test
+    public void M2_06_route_different_continents() throws Exception {
+      runCommands(ROUTE, "Brazil", "North Africa");
+      assertContains(ROUTE_INFO.getMessage("[Brazil, North Africa]"));
+      assertContains(CONTINENT_INFO.getMessage("[South America (0), Africa (0)]"));
+    }
+
+    /** Tests route with multiple invalid inputs. */
+    @Test
+    public void M2_07_route_multiple_invalid() throws Exception {
+      runCommands(ROUTE, "Invalid1", "Invalid2", "India", "Invalid3", "Siam");
+      assertContains(INVALID_COUNTRY.getMessage("Invalid1"));
+      assertContains(INVALID_COUNTRY.getMessage("Invalid2"));
+      assertContains(INVALID_COUNTRY.getMessage("Invalid3"));
+      assertContains(ROUTE_INFO.getMessage("[India, Siam]"));
+    }
+
+    /** Tests route with fuel cost calculation. */
+    @Test
+    public void M2_08_route_with_fuel_cost() throws Exception {
+      runCommands(ROUTE, "Ural", "Venezuela");
+      assertContains(
+          ROUTE_INFO.getMessage(
+              "[Ural, Ukraine, Southern Europe, North Africa, Brazil, Venezuela]"));
+      assertContains(FUEL_INFO.getMessage("18"));
+    }
+
+    /** Tests route with continent fuel tracking. */
+    @Test
+    public void M2_09_route_continent_fuel() throws Exception {
+      runCommands(ROUTE, "Ural", "Brazil");
+      assertContains(
+          CONTINENT_INFO.getMessage("[Asia (0), Europe (11), Africa (5), South America (0)]"));
+      assertContains(FUEL_CONTINENT_INFO.getMessage("Europe (11)"));
+    }
+
+    /** Tests route with multiple continent crossings. */
+    @Test
+    public void M2_10_route_multiple_continents() throws Exception {
+      runCommands(ROUTE, "Great Britain", "Eastern Australia");
+      assertContains(
+          ROUTE_INFO.getMessage(
+              "[Great Britain, Scandinavia, Ukraine, Ural, China, Siam, Indonesia, New Guinea,"
+                  + " Eastern Australia]"));
+      assertContains(CONTINENT_INFO.getMessage("[Europe (10), Asia (22), Australia (5)]"));
+    }
+
+    /** Tests route with zero fuel cost. */
+    @Test
+    public void M2_11_route_zero_fuel() throws Exception {
+      runCommands(ROUTE, "Greenland", "Iceland");
+      assertContains(ROUTE_INFO.getMessage("[Greenland, Iceland]"));
+      assertContains(FUEL_INFO.getMessage("0"));
+    }
+
+    /** Tests route with maximum fuel cost in a continent. */
+    @Test
+    public void M2_12_route_max_continent_fuel() throws Exception {
+      runCommands(ROUTE, "Argentina", "Japan");
+      assertContains(FUEL_CONTINENT_INFO.getMessage("North America (15)"));
+    }
+
+    /** Tests route with repeated continent visits. */
+    @Test
+    public void M2_13_route_repeated_continent() throws Exception {
+      runCommands(ROUTE, "Ural", "Middle East");
+      assertContains(CONTINENT_INFO.getMessage("[Asia (0), Europe (6)]"));
+    }
+
+    /** Tests route with special characters in country names. */
+    @Test
+    public void M2_14_route_special_characters() throws Exception {
+      runCommands(ROUTE, "New Guinea", "Western Australia");
+      assertContains(ROUTE_INFO.getMessage("[New Guinea, Western Australia]"));
+    }
+
+    /** Tests route with longest possible path. */
+    @Test
+    public void M2_15_route_longest_path() throws Exception {
+      runCommands(ROUTE, "Eastern Australia", "Great Britain");
+      assertContains(
+          ROUTE_INFO.getMessage(
+              "[Eastern Australia, New Guinea, Indonesia, Siam, India, Middle East, Ukraine,"
+                  + " Scandinavia, Great Britain]"));
+    }
+
+    /** Tests route with single continent visit. */
+    @Test
+    public void M2_16_route_single_continent() throws Exception {
+      runCommands(ROUTE, "Ural", "Japan");
+      assertContains(CONTINENT_INFO.getMessage("[Asia (18)]"));
+    }
+
+    /** Tests route with empty input handling. */
+    @Test
+    public void M2_17_route_empty_input() throws Exception {
+      runCommands(ROUTE, "", "India", "Siam");
+      assertContains(INVALID_COUNTRY.getMessage(""));
+      assertContains(ROUTE_INFO.getMessage("[India, Siam]"));
+    }
+
+    /** Tests route with whitespace in country names. */
+    @Test
+    public void M2_18_route_whitespace() throws Exception {
+      runCommands(ROUTE, "New Guinea", "Western Australia");
+      assertContains(ROUTE_INFO.getMessage("[New Guinea, Western Australia]"));
+    }
+
+    /** Tests route with maximum fuel cost. */
+    @Test
+    public void M2_19_route_max_fuel() throws Exception {
+      runCommands(ROUTE, "Argentina", "Japan");
+      assertContains(FUEL_INFO.getMessage("28"));
+    }
+
+    /** Tests route with minimum fuel cost. */
+    @Test
+    public void M2_20_route_min_fuel() throws Exception {
+      runCommands(ROUTE, "Greenland", "Iceland");
+      assertContains(FUEL_INFO.getMessage("0"));
     }
   }
 }
